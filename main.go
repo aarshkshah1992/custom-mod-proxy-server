@@ -24,12 +24,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("")
 	log.Println("Received request for:", path, "with query:", query)
 
-	// Check for go-get parameter to serve meta tags
-	if query.Get("go-get") == "1" {
-		handleMetaTags(w, path)
-		return
-	}
-
 	if !strings.HasPrefix(path, "/github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64") {
 		// redirect request to google go proxy
 		http.Redirect(w, r, "https://proxy.golang.org"+path, http.StatusMovedPermanently)
@@ -56,20 +50,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unsupported module request", http.StatusNotImplemented)
 	}
 }
-
-func handleMetaTags(w http.ResponseWriter, path string) {
-	// Construct and send an HTML response with meta tags
-	fmt.Fprint(w, `<!DOCTYPE html>
-<html>
-<head>
-<meta name="go-import" content="github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64 git https://github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64">
-<meta name="go-source" content="github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64 https://github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64 https://github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64/tree/master{/dir} https://github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64/blob/master{/dir}/{file}#L{line}">
-</head>
-<body>
-</body>
-</html>`)
-}
-
 func handleZip(w http.ResponseWriter, version string) {
 	zipFilePath := "/Users/aarshshah/src/filecoin/prebuilt-ffi-poc/module.zip" // Update this path accordingly
 	zipData, err := ioutil.ReadFile(zipFilePath)
