@@ -27,6 +27,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	if !strings.HasPrefix(path, "/github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64") {
 		// redirect request to google go proxy
 		http.Redirect(w, r, "https://proxy.golang.org"+path, http.StatusMovedPermanently)
+		return
 	}
 
 	// Standard module handling below this point
@@ -43,7 +44,19 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	case strings.HasSuffix(version, ".info"):
 		http.Redirect(w, r, "https://proxy.golang.org"+path, http.StatusMovedPermanently)
 	case strings.HasSuffix(version, ".mod"):
-		http.Redirect(w, r, "https://proxy.golang.org"+path, http.StatusMovedPermanently)
+		// Define the HTML content
+		htmlContent := `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=https://proxy.golang.org/github.com/aarshkshah1992/prebuilt-ffi-darwin-arm64/@v/v0.0.2.mod">
+</head>
+</html>`
+
+		w.WriteHeader(http.StatusMovedPermanently)
+		w.Write([]byte(htmlContent))
+
+		//http.Redirect(w, r, "https://proxy.golang.org"+path, http.StatusMovedPermanently)
 	case strings.HasSuffix(version, ".zip"):
 		handleZip(w, version)
 	default:
